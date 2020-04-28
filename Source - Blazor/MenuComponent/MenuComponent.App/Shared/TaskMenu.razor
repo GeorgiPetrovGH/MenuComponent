@@ -1,0 +1,59 @@
+﻿@inject IJSRuntime JSRuntime;
+<ul>
+    @foreach (var item in TaskMenuConfiguration)
+    {
+         var guidId = GetGuid();
+        
+        <li class=@(IsNested == true ? "nested-nav-tab" : "nav-tab")
+            @onmouseover="@(e => DisplayNestedTabs(guidId))"
+            @onmouseout="@(e => HideNestedTabs(guidId))"
+            @onclick="@(e => ClickTab(item.DisplayName))"
+            @onclick:stopPropagation="true">
+            @item.DisplayName
+            @if (item.NestedTabs != null && item.NestedTabs.Count > 0)
+            {
+                <ul id="@guidId" class="hidden-sub-items">
+                    <TaskMenu TaskMenuConfiguration=item.NestedTabs IsNested=true OnClickCallback="OnClickCallback" />
+                </ul>
+            }
+        </li>
+    }
+</ul>
+
+@code {
+    [Parameter]
+    public ICollection<TaskTab> TaskMenuConfiguration { get; set; }
+
+    [Parameter]
+    public bool IsNested { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnClickCallback { get; set; }
+
+    private void DisplayNestedTabs(string tabId)
+    {
+        ToogleTab(tabId, true);
+    }
+
+    private void HideNestedTabs(string tabId)
+    {
+        ToogleTab(tabId, false);
+    }
+
+    private void ClickTab(string tabDisplayName)
+    {        
+        OnClickCallback.InvokeAsync(tabDisplayName);
+    }
+
+    private void ToogleTab(string tabId, bool shouldShow)
+    {
+        JSRuntime.InvokeVoidAsync("toggleMenuTask", tabId, shouldShow );
+
+        StateHasChanged();
+    }
+
+    private string GetGuid()
+    {
+        return Guid.NewGuid().ToString();
+    }
+}
