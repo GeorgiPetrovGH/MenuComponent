@@ -9,6 +9,15 @@
 !.vscode/launch.json
 !.vscode/extensions.json
 
+.vs/
+bin/
+obj/
+*.user
+artifacts/
+.vscode/
+.dotnet/
+*.binlog
+
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
